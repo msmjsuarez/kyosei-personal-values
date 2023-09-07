@@ -1,0 +1,360 @@
+/**
+ * All of the CSS for your public-facing functionality should be
+ * included in this file.
+ */
+ * {
+  box-sizing: border-box;
+}
+ .pvc-row {
+  display: flex;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  grid-gap: 1rem;
+  margin: 2rem auto 10rem;
+  width: 100%;
+}
+.pvc-card {
+  position: relative;
+  -webkit-transition: -webkit-transform 0.3s;
+  transition: transform 0.3s;
+}
+ .pvc-card:hover {
+    -webkit-transform: translateZ(0) scale(1.05);
+    -moz-transform: translateZ(0) scale(1.05);
+    -ms-transform: translateZ(0) scale(1.05);
+    transform: translateZ(0) scale(1.05);
+}
+.pvc-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  width: 100%;
+  outline: none;
+}
+button.pvc-btn:hover {
+  background-color: transparent;
+  --transform: 0.5s;
+  -webkit-transition: -webkit-transform var(--transform) ease-out,background 0.1s ease-out,box-shadow 0.5s ease-out;
+  transition: transform var(--transform) ease-out,background 0.1s ease-out,box-shadow 0.5s ease-out;
+}
+.pvc-content {
+  display: grid;
+  grid-template-columns: 3fr 4rem 2fr;
+  width: calc(100% - 2 * 10px);
+  box-shadow: 0px 2px 10px 3px rgb(0 0 0 / 15%);
+  margin: 10px;
+  color: #000;
+  background: #fff;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  --transform: 0.5s;
+  -webkit-transition: -webkit-transform var(--transform) ease-out,background 0.1s ease-out,box-shadow 0.5s ease-out;
+  transition: transform var(--transform) ease-out,background 0.1s ease-out,box-shadow 0.5s ease-out;
+  will-change: transform,background;
+  outline: none;
+}
+.pvc-content-section {
+  padding: 0.7rem 1rem;
+  grid-column: 1/3;
+  grid-row: 1/2;
+  z-index: 1;
+  text-align: left;
+}
+.pvc-title {
+  font-weight: bold;
+  font-size: 1.5rem;
+  line-height: 1.2;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+.pvc-desc {
+  font-size: 1.5rem;
+  line-height: 1.4;
+}
+.pvc-btn-bg {
+  -webkit-background-position: center;
+  background-position: center;
+  -webkit-background-size: cover;
+  background-size: cover;
+  width: 100%;
+  display: block;
+  min-height: 170px;
+  -webkit-transition: 0.3s;
+  transition: 0.3s;
+  grid-column: 2/4;
+  grid-row: 1/2;
+  position: relative;
+  -webkit-mask-image: linear-gradient( -75deg, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0) 80% );
+  mask-image: linear-gradient( -75deg, rgba(0, 0, 0, 1) 20%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0) 80% );
+}
+
+.pvc-btn-bg-Certainty {
+  background-image: url(https://res.cloudinary.com/personalvalues/image/upload/w_320,q_50,f_auto/personalvalues/values/certainty);
+}
+
+.pvc-btn-bg-Control {
+  background-image: url(https://res.cloudinary.com/personalvalues/image/upload/w_320,q_50,f_auto/personalvalues/values/control);
+}
+
+.pvc-btn-bg-Security {
+  background-image: url(https://res.cloudinary.com/personalvalues/image/upload/w_320,q_50,f_auto/personalvalues/values/security);
+}
+
+.pvc-btn-bg-Peace {
+  background-image: url(https://res.cloudinary.com/personalvalues/image/upload/w_320,q_50,f_auto/personalvalues/values/peace);
+}
+
+.pvc-btn-bg-Health {
+  background-image: url(https://res.cloudinary.com/personalvalues/image/upload/w_320,q_50,f_auto/personalvalues/values/health);
+}
+
+.pvc-btn-bg-Discipline {
+  background-image: url(https://res.cloudinary.com/personalvalues/image/upload/w_320,q_50,f_auto/personalvalues/values/discipline);
+}
+
+.pvc-btn-bg-Job-security {
+  background-image: url(https://res.cloudinary.com/personalvalues/image/upload/w_320,q_50,f_auto/personalvalues/values/job-security);
+}
+
+.pvc-btn-bg-Wealth {
+  background-image: url(https://res.cloudinary.com/personalvalues/image/upload/w_320,q_50,f_auto/personalvalues/values/wealth);
+}
+
+.pvc-btn-bg-Financial-stability {
+  background-image: url(https://res.cloudinary.com/personalvalues/image/upload/w_320,q_50,f_auto/personalvalues/values/financial-stability);
+}
+
+.pvc-btn-bg-Pleasure {
+  background-image: url(https://res.cloudinary.com/personalvalues/image/upload/w_320,q_50,f_auto/personalvalues/values/pleasure);
+}
+
+.pvc-btn-bg-Tradition {
+  background-image: url(https://res.cloudinary.com/personalvalues/image/upload/w_320,q_50,f_auto/personalvalues/values/tradition);
+}
+
+.pvc-btn-bg-Trust {
+  background-image: url(https://res.cloudinary.com/personalvalues/image/upload/w_320,q_50,f_auto/personalvalues/values/trust);
+}
+
+.pvc-option-Certainty input[type="checkbox"],
+.pvc-option-Control input[type="checkbox"],
+.pvc-option-Security input[type="checkbox"],
+.pvc-option-Peace input[type="checkbox"],
+.pvc-option-Health input[type="checkbox"],
+.pvc-option-Discipline input[type="checkbox"],
+.pvc-option-Job-security input[type="checkbox"],
+.pvc-option-Wealth input[type="checkbox"],
+.pvc-option-Financial-stability input[type="checkbox"],
+.pvc-option-Pleasure input[type="checkbox"],
+.pvc-option-Tradition input[type="checkbox"],
+.pvc-option-Trust input[type="checkbox"] {
+  display: none;
+}
+.pvc-active {
+  display: grid;
+  grid-template-columns: 3fr 4rem 2fr;
+  width: calc(100% - 20px);
+  box-shadow: rgb(0 0 0 / 15%) 0px 2px 10px 3px;
+  margin: 10px;
+  color: #000;
+  background: var(--active-value-card-background-color, #FBD316);
+  border-radius: 0.5rem;
+  overflow: hidden;
+  --transform: 0.5s;
+  transition: transform var(--transform) ease-out,background 0.1s ease-out,box-shadow 0.5s ease-out;
+  will-change: transform, background;
+  outline: none;
+}
+
+label:hover {
+  cursor: pointer;
+}
+
+.css-1aqplw {
+  background: #fff;
+  width: 100%;
+  box-shadow: 0px 0px 15px 0px rgb(0 0 0 / 50%);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+}
+.css-4g6807 {
+  display: grid;
+  max-width: 960px;
+  width: 100%;
+  grid-template-columns: 1fr 1fr 1fr;
+  margin: 0.5rem auto;
+}
+.css-4g6807 {
+  display: grid;
+  max-width: 960px;
+  width: 100%;
+  grid-template-columns: 1fr 1fr 1fr;
+  margin: 2.5rem auto;
+}
+.css-4g6807>* {
+  justify-self: center;
+  -webkit-align-self: center;
+  -ms-flex-item-align: center;
+  align-self: center;
+  font-size: 2rem;
+}
+.pvc-submit {
+  color: #000;
+  fill: #000;
+  background: #fff;
+  border-radius: 10rem;
+  border: 2px solid #000;
+  font-size: 1.5rem;
+  padding: 0.7rem 1rem;
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  -webkit-text-decoration: none;
+  text-decoration: none;
+  font-weight: 700;
+  outline: none;
+  -webkit-transition: 0.3;
+  transition: 0.3;
+  transition-timing-function: ease-out;
+  cursor: pointer;
+}
+.pvc-submit:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.page-id-2 footer {
+  display: none;
+}
+
+
+
+
+html, body, .tournament {
+  height: 100%;
+  font-family: sans-serif;
+  font-size: 10px;
+}
+
+li {
+  list-style: none !important;
+}
+
+.hidden-bracket {
+  display: none !important;
+}
+
+.bracket {
+  position: relative;
+  display: flex;
+  height: 100%;
+  padding-top: 38px;
+}
+.bracket:before {
+  position: absolute;
+  content: "";
+  width: 50%;
+  height: 2px;
+  top: 38px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: black;
+}
+.bracket li {
+  position: relative;
+  width: 50%;
+  flex: 1;
+  height: 100%;
+  padding-top: 8px;
+  /* border: 1px solid black */
+  text-align: center;
+}
+.bracket li:before {
+  position: absolute;
+  content: "";
+  width: 2px;
+  height: 9px;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: black;
+}
+.bracket li.winner {
+  position: absolute;
+  top: 0;
+  left: -1px;
+  height: 30px;
+  width: 100%;
+}
+.bracket li.winner:before {
+  top: 30px;
+}
+button.pvc-btn-selected,
+button.pvc-btn-selected:hover {
+  background-color: transparent;
+}
+
+/* plugin v2 styles*/
+.card {
+    display: inline-flex;
+}
+
+@media (max-width: 767px) {
+  .col-md-3 {
+      text-align: center;
+  }
+}
+
+
+/* my top result css */
+.pvc-card-0 {
+    background: rgb(206, 65, 123);
+}
+
+.pvc-card-1 {
+background: rgb(182, 81, 159);
+}
+
+.pvc-card-2 {
+  background: rgb(139, 104, 171);
+}
+
+.pvc-card-3 {
+  background: rgb(86, 117, 188);
+}
+
+.pvc-card-4 {
+      background: rgb(10, 124, 193);
+}
+
+.top-titles div.personal-value {
+    display: flex;
+    padding: 50px;
+}
+
+.top-titles div.personal-value div.pvc-content-container, .top-titles div.personal-value div.background-image-container {
+    box-sizing: border-box;
+}
+
+.top-titles div.pvc-content-container {
+    flex-grow: 1;
+    padding-right: 10px;
+}
+
+.top-titles div.personal-value h2 {
+    color: #fff;
+    font-size: xx-large;
+    font-weight: 600;
+}
+
+.top-titles div.personal-value p {
+    font-size: medium;
+    color: #fff;
+}
+
