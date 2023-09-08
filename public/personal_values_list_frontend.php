@@ -258,7 +258,7 @@
           <?php for ($col = 1; $col <= $cards_per_row; $col++) : ?>
             <?php if ($index < $card_count) : ?>
               <div class="col-md-<?php echo intval(12 / $cards_per_row); ?>">
-                <div class="card" onclick="selectCard(this)" data-modality-ids="<?php echo ($cards[$index]['modality_tag_ids']); ?>">
+                <div class="card" onclick="selectCard(this)" data-original-modality-ids="<?php echo ($cards[$index]['modality_tag_ids']); ?>" data-modality-ids="<?php echo ($cards[$index]['modality_tag_ids']); ?>">
                   <div class="card-body">
                     <h3><?php echo esc_html($cards[$index]['title']); ?></h3>
                     <p><?php echo esc_html($cards[$index]['description']); ?></p>
@@ -664,51 +664,84 @@
     });
   }
 
+  // Modify the applyModalityFilter function as follows
+  // Store the original HTML content of the personal-values-list
+  var originalCardList = $('.personal-values-list').html();
+
+  // Function to reset the card list to its original state
+  function resetCardList() {
+    $('.personal-values-list').html(originalCardList);
+    adjustCardsPerRow();
+  }
+
   // Call the function to populate modality names on page load
   $(document).ready(function() {
     fetchAndPopulateModalities();
+
+    // Call the function whenever the modality selection changes
+    $(document).on('change', '#modality-select', function() {
+      applyModalityFilter();
+    });
+
   });
 
+  // Function to apply modality filter
   function applyModalityFilter() {
     var selectedModality = $('#modality-select').val();
 
-    // If a modality is selected, hide cards that do not match the selected modality
-    if (selectedModality !== '') {
-      $('.personal-values-list .card').each(function() {
-        // Retrieve and parse the data-modality-ids attribute
-        var cardModalityIds = $(this).data('modality-ids');
+    // Reset the card list to its original state
+    resetCardList();
 
+    if (selectedModality !== '') {
+      // Filter the cards based on the selected modality
+      $('.personal-values-list .card').each(function() {
+        var cardModalityIds = $(this).data('modality-ids');
         if (cardModalityIds && typeof cardModalityIds === 'string') {
           cardModalityIds = cardModalityIds.split(',').map(function(id) {
-            return parseInt(id, 10); // Parse as integer with base 10
+            return parseInt(id, 10);
           });
 
-          if (cardModalityIds.indexOf(parseInt(selectedModality)) === -1) {
+          if (cardModalityIds.indexOf(parseInt(selectedModality, 10)) === -1) {
             $(this).hide();
-          } else {
-            // Convert the array of modality IDs back to a string
-            $(this).attr('data-modality-ids', cardModalityIds.join(','));
-            $(this).show();
           }
         }
       });
-    } else {
-      // Show all cards when no modality is selected
-      $('.personal-values-list .card').each(function() {
-        // Reset the data-modality-ids attribute to its original value
-        var originalModalityIds = $(this).data('original-modality-ids');
-        if (originalModalityIds) {
-          $(this).attr('data-modality-ids', originalModalityIds);
-        }
-      });
-      $('.personal-values-list .card').show();
+      adjustCardsPerRow(); // Adjust the cards per row after filtering
+
+      // Refresh modality options in the dropdown
+      fetchAndPopulateModalities();
     }
   }
 
-  // Call the function whenever the modality selection changes
-  $('#modality-select').change(function() {
-    applyModalityFilter();
-  });
+  function adjustCardsPerRow() {
+    var cardsPerRow = <?php echo $cards_per_row; ?>;
+
+    var $cards = $('.personal-values-list .card:visible');
+
+    // Calculate the number of rows required
+    var rowCount = Math.ceil($cards.length / cardsPerRow);
+
+    // Remove existing rows
+    $('.personal-values-list .row').remove();
+
+    for (var row = 0; row < rowCount; row++) {
+      var $row = $('<div>').addClass('row');
+
+      for (var col = 0; col < cardsPerRow; col++) {
+        var index = row * cardsPerRow + col;
+        if (index < $cards.length) {
+          var $card = $('<div>').addClass('col-md-' + (12 / cardsPerRow));
+          var $cardContainer = $('<div>').addClass('card-container'); // Create a container for the card
+          $cardContainer.append($cards.eq(index).clone());
+
+          $card.append($cardContainer); // Append the card container to the card
+          $row.append($card); // Append the card to the row
+        }
+      }
+
+      $('.personal-values-list').append($row);
+    }
+  }
 
 
 
