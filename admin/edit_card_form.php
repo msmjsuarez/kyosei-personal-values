@@ -11,7 +11,7 @@
     $card = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $card_id), ARRAY_A);
 
 
-    if(intval($_GET['paged']) == '') {
+    if (intval($_GET['paged']) == '') {
         $getpage = 1;
     } else {
         $getpage = intval($_GET['paged']);
@@ -44,25 +44,25 @@
             wp_editor($long_description_content, $long_description_editor_id, $long_description_settings);
             ?>
         </div>
-       <div class="form-group">
-        <!-- Retrieve and display the modality tags from the modality tags table -->
-        <?php
-        $modalityTagsTable = $wpdb->prefix . 'kyose_personal_value_modality_tags';
-        $modalityTags = $wpdb->get_results("SELECT * FROM $modalityTagsTable", ARRAY_A);
-        if (!empty($modalityTags)) {
-            echo '<div><label for="modality_tags">Modality Tags:</label></div>';
-            echo '<div>';
-            foreach ($modalityTags as $tag) {
-                $checked = in_array($tag['id'], explode(',', $card['modality_tag_ids'])) ? 'checked' : '';
-                echo '<input type="checkbox" class="form-control" name="modality_tags[]" value="' . esc_attr($tag['id']) . '" ' . $checked . '> ' . esc_html($tag['name']) . '<br>';
+        <div class="form-group">
+            <!-- Retrieve and display the modality tags from the modality tags table -->
+            <?php
+            $modalityTagsTable = $wpdb->prefix . 'kyosei_personal_value_modality_tags';
+            $modalityTags = $wpdb->get_results("SELECT * FROM $modalityTagsTable", ARRAY_A);
+            if (!empty($modalityTags)) {
+                echo '<div><label for="modality_tags">Modality Tags:</label></div>';
+                echo '<div>';
+                foreach ($modalityTags as $tag) {
+                    $checked = in_array($tag['id'], explode(',', $card['modality_tag_ids'])) ? 'checked' : '';
+                    echo '<input type="checkbox" class="form-control" name="modality_tags[]" value="' . esc_attr($tag['id']) . '" ' . $checked . '> ' . esc_html($tag['name']) . '<br>';
+                }
+                echo '</div>';
             }
-            echo '</div>';
-        }
-        ?>
+            ?>
         </div>
         <div class="form-group">
             <input type="submit" class="btn btn-info" name="update_card" value="Update Card">
         </div>
-        
+
     </form>
 </div>

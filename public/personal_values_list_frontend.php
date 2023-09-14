@@ -242,48 +242,50 @@
 
     <div class="space"></div>
 
-    <?php
-    // Retrieve the number of cards to be selected from settings
-    $cards_to_select = get_option('personal_values_selected_card_count', 5);
-    // Retrieve the number of cards per row from settings
-    $cards_per_row = get_option('personal_values_cards_per_row', 3);
+    <div class="resetthis">
+      <?php
+      // Retrieve the number of cards to be selected from settings
+      $cards_to_select = get_option('personal_values_selected_card_count', 5);
+      // Retrieve the number of cards per row from settings
+      $cards_per_row = get_option('personal_values_cards_per_row', 3);
 
-    if (!empty($cards)) :
-      $card_count = count($cards);
-      $row_count = ceil($card_count / $cards_per_row);
-      $index = 0;
-      for ($row = 1; $row <= $row_count; $row++) :
-    ?>
-        <div class="row">
-          <?php for ($col = 1; $col <= $cards_per_row; $col++) : ?>
-            <?php if ($index < $card_count) : ?>
-              <div class="col-md-<?php echo intval(12 / $cards_per_row); ?>">
-                <div class="card" onclick="selectCard(this)" data-original-modality-ids="<?php echo ($cards[$index]['modality_tag_ids']); ?>" data-modality-ids="<?php echo ($cards[$index]['modality_tag_ids']); ?>">
-                  <div class="card-body">
-                    <h3><?php echo esc_html($cards[$index]['title']); ?></h3>
-                    <p><?php echo esc_html($cards[$index]['description']); ?></p>
-                    <img src="<?php echo esc_url($cards[$index]['image']); ?>" alt="<?php echo esc_attr($cards[$index]['title']); ?>" class="img-fluid">
-                    <input type="hidden" name="selected_cards[]" value="<?php echo esc_attr($cards[$index]['id']); ?>">
+      if (!empty($cards)) :
+        $card_count = count($cards);
+        $row_count = ceil($card_count / $cards_per_row);
+        $index = 0;
+        for ($row = 1; $row <= $row_count; $row++) :
+      ?>
+          <div class="row">
+            <?php for ($col = 1; $col <= $cards_per_row; $col++) : ?>
+              <?php if ($index < $card_count) : ?>
+                <div class="col-md-<?php echo intval(12 / $cards_per_row); ?>">
+                  <div class="card" onclick="selectCard(this)" data-original-modality-ids="<?php echo ($cards[$index]['modality_tag_ids']); ?>" data-modality-ids="<?php echo ($cards[$index]['modality_tag_ids']); ?>">
+                    <div class="card-body">
+                      <h3><?php echo esc_html($cards[$index]['title']); ?></h3>
+                      <p><?php echo esc_html($cards[$index]['description']); ?></p>
+                      <img src="<?php echo esc_url($cards[$index]['image']); ?>" alt="<?php echo esc_attr($cards[$index]['title']); ?>" class="img-fluid">
+                      <input type="hidden" name="selected_cards[]" value="<?php echo esc_attr($cards[$index]['id']); ?>">
+                    </div>
                   </div>
                 </div>
-              </div>
-            <?php endif; ?>
-            <?php $index++; ?>
-          <?php endfor; ?>
-        </div>
-      <?php
-      endfor;
-    else :
-      ?>
-      <p>No personal value cards found.</p>
-    <?php endif; ?>
+              <?php endif; ?>
+              <?php $index++; ?>
+            <?php endfor; ?>
+          </div>
+        <?php
+        endfor;
+      else :
+        ?>
+        <p>No personal value cards found.</p>
+      <?php endif; ?>
 
-    <!-- Submit Button -->
-    <div class="fixed-bottom">
-      <span id="selected-count"><?php echo count($_POST['selected_cards'] ?? []); ?></span> card(s) selected
-      <button type="submit" class="btn btn-primary" id="submit-button" <?php echo (count($_POST['selected_cards'] ?? []) < $cards_to_select) ? 'disabled' : ''; ?>>
-        <?php echo (count($_POST['selected_cards'] ?? []) >= $cards_to_select) ? 'Continue' : 'Select ' . ($cards_to_select - (count($_POST['selected_cards'] ?? []))) . ' or more'; ?>
-      </button>
+      <!-- Submit Button -->
+      <div class="fixed-bottom">
+        <span id="selected-count"><?php echo count($_POST['selected_cards'] ?? []); ?></span> card(s) selected
+        <button type="submit" class="btn btn-primary" id="submit-button" <?php echo (count($_POST['selected_cards'] ?? []) < $cards_to_select) ? 'disabled' : ''; ?>>
+          <?php echo (count($_POST['selected_cards'] ?? []) >= $cards_to_select) ? 'Continue' : 'Select ' . ($cards_to_select - (count($_POST['selected_cards'] ?? []))) . ' or more'; ?>
+        </button>
+      </div>
     </div>
   </form>
 </div>
@@ -648,15 +650,22 @@
       dataType: 'json',
       success: function(response) {
         var modalitySelect = $('#modality-select');
+        var selectedModality = modalitySelect.val(); // Get the currently selected modality
+
         modalitySelect.empty(); // Clear existing options
 
-        // Add the "All Modalities" option
+        // Add the "All Modalities" option at the top
         modalitySelect.append($('<option>').attr('value', '').text('All Modalities'));
 
         // Add modality names as options
         response.forEach(function(modality) {
           modalitySelect.append($('<option>').attr('value', modality.id).text(modality.name));
         });
+
+        // Check if there's a selected modality and set it as the selected option
+        if (selectedModality) {
+          modalitySelect.val(selectedModality);
+        }
       },
       error: function(xhr, status, error) {
         console.error('Error fetching modality names:', error);
@@ -666,13 +675,17 @@
 
   // Modify the applyModalityFilter function as follows
   // Store the original HTML content of the personal-values-list
-  var originalCardList = $('.personal-values-list').html();
+  var originalCardList = $('.resetthis').html();
 
   // Function to reset the card list to its original state
   function resetCardList() {
-    $('.personal-values-list').html(originalCardList);
+    // $('.personal-values-list').html(originalCardList);
+    $('.resetthis').html(originalCardList);
     adjustCardsPerRow();
   }
+
+  // Store the selected modality
+  var selectedModality = $('#modality-select').val();
 
   // Call the function to populate modality names on page load
   $(document).ready(function() {
@@ -680,12 +693,16 @@
 
     // Call the function whenever the modality selection changes
     $(document).on('change', '#modality-select', function() {
+      // Get the selected modality
+      selectedModality = $(this).val();
       applyModalityFilter();
+
+      // Set the selected modality as the selected option
+      $('#modality-select option[value="' + selectedModality + '"]').prop('selected', true);
     });
 
   });
 
-  // Function to apply modality filter
   function applyModalityFilter() {
     var selectedModality = $('#modality-select').val();
 
@@ -693,25 +710,36 @@
     resetCardList();
 
     if (selectedModality !== '') {
+
+      // Convert selectedModality to a string
+      selectedModality = selectedModality.toString();
       // Filter the cards based on the selected modality
       $('.personal-values-list .card').each(function() {
         var cardModalityIds = $(this).data('modality-ids');
+
+        cardModalityIds = cardModalityIds.toString();
+
         if (cardModalityIds && typeof cardModalityIds === 'string') {
           cardModalityIds = cardModalityIds.split(',').map(function(id) {
+
             return parseInt(id, 10);
           });
 
           if (cardModalityIds.indexOf(parseInt(selectedModality, 10)) === -1) {
             $(this).hide();
+          } else {
+            $(this).show(); // Show the card if it matches the selected modality
           }
         }
       });
+
       adjustCardsPerRow(); // Adjust the cards per row after filtering
 
       // Refresh modality options in the dropdown
       fetchAndPopulateModalities();
     }
   }
+
 
   function adjustCardsPerRow() {
     var cardsPerRow = <?php echo $cards_per_row; ?>;
@@ -739,11 +767,10 @@
         }
       }
 
-      $('.personal-values-list').append($row);
+      // $('.personal-values-list').append($row);
+      $('.resetthis').append($row);
     }
   }
-
-
 
   $('.selected-value-cards').on('click', '.card', function() {
     selectPairCard(this);
@@ -755,5 +782,5 @@
 
   $('.personal-values-list .card').removeClass('selected');
   updateSelectedCount();
-  // updateSubmitButton();
+  updateSubmitButton();
 </script>
