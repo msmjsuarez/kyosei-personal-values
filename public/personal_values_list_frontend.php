@@ -1,12 +1,9 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-<!-- Add your custom CSS -->
+
+
 <style>
-  /* Add your custom styles here */
-  .personal-values-list {
-    /* Your styles for the personal values list */
-  }
-
   .personal-values-list li,
   .personal-values-list .card:hover {
     /* Your styles for each personal value card */
@@ -253,7 +250,7 @@
         $card_count = count($cards);
         $row_count = ceil($card_count / $cards_per_row);
         $index = 0;
-        for ($row = 1; $row <= $row_count; $row++) :
+        for ($row = 1; $row <= $row_count; $row++) : ($cards[$index]['long_description']);
       ?>
           <div class="row">
             <?php for ($col = 1; $col <= $cards_per_row; $col++) : ?>
@@ -261,7 +258,7 @@
                 <div class="col-md-<?php echo intval(12 / $cards_per_row); ?>">
                   <div class="card" onclick="selectCard(this)" data-original-modality-ids="<?php echo ($cards[$index]['modality_tag_ids']); ?>" data-modality-ids="<?php echo ($cards[$index]['modality_tag_ids']); ?>">
                     <div class="card-body">
-                      <h3><?php echo esc_html($cards[$index]['title']); ?></h3>
+                      <h3 class="personal-value-title"><?php echo esc_html($cards[$index]['title']); ?></h3>
                       <p><?php echo esc_html($cards[$index]['description']); ?></p>
                       <img src="<?php echo esc_url($cards[$index]['image']); ?>" alt="<?php echo esc_attr($cards[$index]['title']); ?>" class="img-fluid">
                       <input type="hidden" name="selected_cards[]" value="<?php echo esc_attr($cards[$index]['id']); ?>">
@@ -319,17 +316,31 @@
   ?>
 </div>
 
-<!-- Add jQuery -->
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-
-<!-- Add Bootstrap JS -->
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-
 <script>
   var selectedCards = [];
   var cardPairs = [];
   var currentPairIndex = 0;
   var maxCardCount = <?php echo intval(get_option('personal_values_selected_card_count', 12)); ?>;
+  // Store the selected modality
+  var selectedModality = $('#modality-select').val();
+
+
+  // Call the function to populate modality names on page load
+  $(document).ready(function() {
+    fetchAndPopulateModalities();
+
+    // Call the function whenever the modality selection changes
+    $(document).on('change', '#modality-select', function() {
+      // Get the selected modality
+      selectedModality = $(this).val();
+      applyModalityFilter();
+
+      // Set the selected modality as the selected option
+      $('#modality-select option[value="' + selectedModality + '"]').prop('selected', true);
+    });
+
+  });
+
 
   function selectCard(element) {
     var selectedCount = $('.personal-values-list .card.selected').length;
@@ -684,25 +695,6 @@
     adjustCardsPerRow();
   }
 
-  // Store the selected modality
-  var selectedModality = $('#modality-select').val();
-
-  // Call the function to populate modality names on page load
-  $(document).ready(function() {
-    fetchAndPopulateModalities();
-
-    // Call the function whenever the modality selection changes
-    $(document).on('change', '#modality-select', function() {
-      // Get the selected modality
-      selectedModality = $(this).val();
-      applyModalityFilter();
-
-      // Set the selected modality as the selected option
-      $('#modality-select option[value="' + selectedModality + '"]').prop('selected', true);
-    });
-
-  });
-
   function applyModalityFilter() {
     var selectedModality = $('#modality-select').val();
 
@@ -739,7 +731,6 @@
       fetchAndPopulateModalities();
     }
   }
-
 
   function adjustCardsPerRow() {
     var cardsPerRow = <?php echo $cards_per_row; ?>;

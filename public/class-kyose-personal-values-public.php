@@ -63,6 +63,9 @@ class Kyose_Personal_Values_Public
 
         add_action('wp_ajax_get_modality_names', array($this, 'get_modality_names_callback'));
         add_action('wp_ajax_nopriv_get_modality_names', array($this, 'get_modality_names_callback')); // Allow non-logged-in users to access this action
+
+        add_action('wp_ajax_get_long_description', array($this, 'get_long_description'));
+        add_action('wp_ajax_nopriv_get_long_description', array($this, 'get_long_description'));
     }
 
     /**
@@ -174,20 +177,6 @@ class Kyose_Personal_Values_Public
                 )
             );
 
-            /*if ($existing_row) {
-                // Update the existing row with the serialized titles
-                $wpdb->update(
-                    $table_name,
-                    array(
-                        'title' => $serialized_titles,
-                        'created_at' => $current_timestamp
-                    ),
-                    array('user_id' => $user_id),
-                    array('%s', '%s'),
-                    array('%d')
-                );
-            } else {*/
-            // Insert a new row with the serialized titles
             $wpdb->insert(
                 $table_name,
                 array(
@@ -197,7 +186,6 @@ class Kyose_Personal_Values_Public
                 ),
                 array('%d', '%s', '%s')
             );
-            //}
 
             // Send a success response
             wp_send_json_success('Top personal value card titles saved successfully.');
@@ -234,12 +222,12 @@ class Kyose_Personal_Values_Public
                 $output = '';
 
                 // Create the dropdown select
-                $output .= '<select id="dateSelect">';
+                $output .= '<div class="row"><select id="dateSelect">';
                 foreach ($rows as $row) {
                     $created_at_formatted = date('F j, Y g:i A', strtotime($row->created_at));
                     $output .= '<option value="' . $row->id . '">' . esc_html($created_at_formatted) . '</option>';
                 }
-                $output .= '</select><br /><br />';
+                $output .= '</select></div><br>';
 
                 // Create a container for displaying personal value cards
                 $output .= '<div id="personalValueContainer"></div>';
@@ -364,5 +352,28 @@ class Kyose_Personal_Values_Public
         wp_send_json($modality_names);
 
         wp_die();
+    }
+
+    public function get_long_description()
+    {
+        global $wpdb;
+
+        // Get the card title from the AJAX request
+        $card_title = sanitize_text_field($_POST['title']);
+
+        // Prepare the table name
+        $table_name = $wpdb->prefix . 'kyosei_personal_values';
+
+        // Query the database to get the long_description based on the card title
+        $query = $wpdb->prepare("SELECT long_description FROM $table_name WHERE title = %s", $card_title);
+        $long_description = $wpdb->get_var($query);
+
+        // Prepare the response data
+        $response = array(
+            'long_description' => $long_description,
+        );
+
+        // Send the response as JSON
+        wp_send_json($response);
     }
 }

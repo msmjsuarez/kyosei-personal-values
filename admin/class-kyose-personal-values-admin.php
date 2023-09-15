@@ -1,4 +1,5 @@
 <?php
+
 /**
  * The admin-specific functionality of the plugin.
  *
@@ -60,6 +61,9 @@ class Kyose_Personal_Values_Admin
 
         // Add the options page to the allowed options list
         add_action('admin_init', [$this, 'register_compare_page_text_settings']);
+
+        add_action('show_user_profile', [$this, 'append_custom_link_to_user_profiles']);
+        add_action('edit_user_profile', [$this, 'append_custom_link_to_user_profiles']);
     }
 
     /**
@@ -81,7 +85,7 @@ class Kyose_Personal_Values_Admin
          * class.
          */
 
-        wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__).'css/kyose-personal-values-admin.css', [], $this->version, 'all');
+        wp_enqueue_style($this->plugin_name, plugin_dir_url(__FILE__) . 'css/kyose-personal-values-admin.css', [], $this->version, 'all');
     }
 
     /**
@@ -103,28 +107,31 @@ class Kyose_Personal_Values_Admin
          * class.
          */
 
-        wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__).'js/kyose-personal-values-admin.js', ['jquery'], $this->version, false);
+        wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/kyose-personal-values-admin.js', ['jquery'], $this->version, false);
 
         // Pass the number of cards per row to the frontend
         $cards_per_row = get_option('personal_values_cards_per_row', 3);
         wp_localize_script($this->plugin_name, 'kyose_personal_values_settings', ['cards_per_row' => $cards_per_row]);
     }
 
-    public function enqueue_wp_editor() {
+    public function enqueue_wp_editor()
+    {
         wp_enqueue_editor();
     }
 
-    public function kyosei_personal_values_menu() {
+    public function kyosei_personal_values_menu()
+    {
         add_menu_page(
-          'Personal Values',
-          'Personal Values',
-          'manage_options',
-          'personal-values',
-          [$this, 'render_personal_values']
+            'Personal Values',
+            'Personal Values',
+            'manage_options',
+            'personal-values',
+            [$this, 'render_personal_values']
         );
     }
 
-    public function render_personal_values() {
+    public function render_personal_values()
+    {
         if (isset($_GET['action']) && $_GET['action'] === 'delete') {
             $this->delete_card();
         } elseif (isset($_POST['add_card'])) {
@@ -149,9 +156,9 @@ class Kyose_Personal_Values_Admin
             $image = $_FILES['image'];
 
             // Generate a unique identifier (timestamp) for the image
-        $unique_identifier = time(); // This will be the current timestamp
+            $unique_identifier = time(); // This will be the current timestamp
 
-        // Upload the image
+            // Upload the image
             $upload_dir = wp_upload_dir();
             $image_name = basename($image['name']);
 
@@ -193,7 +200,8 @@ class Kyose_Personal_Values_Admin
     }
 
 
-    private static function updateCard() {
+    private static function updateCard()
+    {
         $card_id = $_POST['card_id'];
         $title = stripslashes(sanitize_text_field($_POST['title']));
         $description = stripslashes(sanitize_text_field($_POST['description']));
@@ -300,16 +308,19 @@ class Kyose_Personal_Values_Admin
         wp_send_json_success();
     }
 
-    private function renderCardList() {
+    private function renderCardList()
+    {
         include_once plugin_dir_path(__FILE__) . 'personal_values_list.php';
     }
 
-    private function renderEditForm() {
+    private function renderEditForm()
+    {
         include_once plugin_dir_path(__FILE__) . 'edit_card_form.php';
     }
 
     // Add submenu page to Personal Values menu
-    public function register_personal_values_submenu() {
+    public function register_personal_values_submenu()
+    {
         add_submenu_page(
             'personal-values',
             'Modality Tags',
@@ -350,7 +361,8 @@ class Kyose_Personal_Values_Admin
     }
 
     // Modality Tags page callback function
-    public function modality_tags_page() {
+    public function modality_tags_page()
+    {
         global $wpdb;
         $table_name = $wpdb->prefix . 'kyosei_personal_value_modality_tags';
 
@@ -379,7 +391,7 @@ class Kyose_Personal_Values_Admin
 
         // Retrieve all Modality tags from the database
         $modality_tags = $wpdb->get_results("SELECT * FROM $table_name", ARRAY_A);
-        ?>
+?>
         <div class="wrap">
             <h1>Modality Tags</h1>
 
@@ -410,12 +422,13 @@ class Kyose_Personal_Values_Admin
                 </tbody>
             </table>
         </div>
-        <?php
+    <?php
     }
 
 
     // Render the settings page
-    public function render_personal_values_settings() {
+    public function render_personal_values_settings()
+    {
         // Check if form is submitted and update the option
         if (isset($_POST['personal_values_submit'])) {
             $cards_per_row = isset($_POST['cards_per_row']) ? absint($_POST['cards_per_row']) : 3;
@@ -425,7 +438,7 @@ class Kyose_Personal_Values_Admin
 
         // Retrieve the current value of cards per row option
         $cards_per_row = get_option('personal_values_cards_per_row', 3);
-        ?>
+    ?>
 
         <div class="wrap">
             <h1>Cards Per Row Settings</h1>
@@ -450,7 +463,7 @@ class Kyose_Personal_Values_Admin
             </form>
         </div>
 
-        <?php
+    <?php
     }
 
     public function fetch_personal_values_callback()
@@ -497,7 +510,8 @@ class Kyose_Personal_Values_Admin
         wp_send_json_success(array('html' => $html));
     }
 
-    public function render_cards_selection_settings() {
+    public function render_cards_selection_settings()
+    {
         // Check if form is submitted and update the option
         if (isset($_POST['cards_selection_submit'])) {
             $selected_card_count = isset($_POST['selected_card_count']) ? absint($_POST['selected_card_count']) : 5;
@@ -507,7 +521,7 @@ class Kyose_Personal_Values_Admin
 
         // Retrieve the current value of cards selected by the admin
         $selected_card_count = get_option('personal_values_selected_card_count', 5);
-        ?>
+    ?>
 
         <div class="wrap">
             <h1>Cards Selection Settings</h1>
@@ -534,53 +548,55 @@ class Kyose_Personal_Values_Admin
             </form>
         </div>
 
-        <?php
+    <?php
     }
 
-    public function render_compare_page_text_settings() {
-    // Output the settings fields and sections for the options page
+    public function render_compare_page_text_settings()
+    {
+        // Output the settings fields and sections for the options page
     ?>
-    <div class="wrap">
-        <h1>Compare Page Text Settings</h1>
-        <form method="post" action="options.php">
-            <?php settings_fields('personal_values_compare_page_text_group'); ?>
-            <?php do_settings_sections('personal-values-compare-page-text'); ?>
+        <div class="wrap">
+            <h1>Compare Page Text Settings</h1>
+            <form method="post" action="options.php">
+                <?php settings_fields('personal_values_compare_page_text_group'); ?>
+                <?php do_settings_sections('personal-values-compare-page-text'); ?>
 
-            <h2>Top Text</h2>
-            <?php
-            // Create WYSIWYG editor for 'Top' text field
-            wp_editor(
-                get_option('personal_values_compare_page_text_top', ''), // Retrieve the saved value
-                'personal_values_compare_page_text_top',
-                array(
-                    'textarea_name' => 'personal_values_compare_page_text_top',
-                    'textarea_rows' => 10,
-                    'editor_height' => 200,
-                )
-            );
-            ?>
+                <h2>Top Text</h2>
+                <?php
+                // Create WYSIWYG editor for 'Top' text field
+                wp_editor(
+                    get_option('personal_values_compare_page_text_top', ''), // Retrieve the saved value
+                    'personal_values_compare_page_text_top',
+                    array(
+                        'textarea_name' => 'personal_values_compare_page_text_top',
+                        'textarea_rows' => 10,
+                        'editor_height' => 200,
+                    )
+                );
+                ?>
 
-            <h2>Bottom Text</h2>
-            <?php
-            // Create WYSIWYG editor for 'Bottom' text field
-            wp_editor(
-                get_option('personal_values_compare_page_text_bottom', ''), // Retrieve the saved value
-                'personal_values_compare_page_text_bottom',
-                array(
-                    'textarea_name' => 'personal_values_compare_page_text_bottom',
-                    'textarea_rows' => 10,
-                    'editor_height' => 200,
-                )
-            );
-            ?>
-            <?php submit_button(); ?>
-        </form>
-    </div>
-    <?php
-}
+                <h2>Bottom Text</h2>
+                <?php
+                // Create WYSIWYG editor for 'Bottom' text field
+                wp_editor(
+                    get_option('personal_values_compare_page_text_bottom', ''), // Retrieve the saved value
+                    'personal_values_compare_page_text_bottom',
+                    array(
+                        'textarea_name' => 'personal_values_compare_page_text_bottom',
+                        'textarea_rows' => 10,
+                        'editor_height' => 200,
+                    )
+                );
+                ?>
+                <?php submit_button(); ?>
+            </form>
+        </div>
+<?php
+    }
 
 
-    public function save_compare_page_text_settings() {
+    public function save_compare_page_text_settings()
+    {
         // Check if the form is submitted and the user has the capability to save options
         if (isset($_POST['submit']) && current_user_can('manage_options')) {
             // Save the values from the WYSIWYG editors to the options table
@@ -596,12 +612,19 @@ class Kyose_Personal_Values_Admin
         }
     }
 
-    public function register_compare_page_text_settings() {
+    public function register_compare_page_text_settings()
+    {
         // Add the options page to the allowed options list
         register_setting('personal_values_compare_page_text_group', 'personal_values_compare_page_text_top');
         register_setting('personal_values_compare_page_text_group', 'personal_values_compare_page_text_bottom');
     }
 
+    public function append_custom_link_to_user_profiles($profileuser)
+    {
+        // Define the custom link you want to add
+        $top_values_link = '<a href="http://kyosei-personal-values.test/my-top-values/">My Top Personal Values</a>';
 
-
+        // Output the custom link
+        echo '<h3> ' . $top_values_link . '</h3>';
+    }
 }
