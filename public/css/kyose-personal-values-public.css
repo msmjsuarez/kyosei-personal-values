@@ -305,10 +305,18 @@ button.pvc-btn-selected:hover {
     display: inline-flex;
 }
 
-@media (max-width: 767px) {
+@media (max-width: 768px) {
   .col-md-3 {
       text-align: center;
+      margin-bottom: 20px;
   }
+  .top-titles div.personal-value {
+    flex-direction: column;
+    align-items: center;
+  }
+  .top-titles div.personal-value .background-image-container {
+    order: -1; /* Move the second box to the top */
+}
 }
 
 
@@ -336,6 +344,8 @@ background: rgb(182, 81, 159);
 .top-titles div.personal-value {
     display: flex;
     padding: 50px;
+    justify-content: center;
+    align-items: center;
 }
 
 .top-titles div.personal-value div.pvc-content-container, .top-titles div.personal-value div.background-image-container {
@@ -343,7 +353,7 @@ background: rgb(182, 81, 159);
 }
 
 .top-titles div.pvc-content-container {
-    flex-grow: 1;
+    flex: 1;
     padding-right: 10px;
 }
 
@@ -356,4 +366,8 @@ background: rgb(182, 81, 159);
 .top-titles div.personal-value p {
     font-size: medium;
     color: #fff;
+}
+
+.top-titles * {
+  color: #fff;
 }

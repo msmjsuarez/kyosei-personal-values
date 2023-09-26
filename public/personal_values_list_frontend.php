@@ -1,5 +1,6 @@
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
 
 
@@ -449,8 +450,6 @@
     // Add the selected card title to the selectedCards array
     selectedCards.push(selectedCardTitle);
 
-    console.log(selectedCardTitle);
-
     // Update the progress bar
     var progress = ((currentPairIndex + 1) / cardPairs.length) * 100;
     $('.progress-bar').css('width', progress + '%').attr('aria-valuenow', progress);
@@ -594,12 +593,30 @@
         //li.append(titleElement);
 
         // Add the description to the list item
-        var descriptionElement = $('<p>').text(data.description);
-        contentContainer.append(descriptionElement);
+        // var descriptionElement = $('<p>').text(data.description);
+        // contentContainer.append(descriptionElement);
         //li.append(descriptionElement);
 
         // Use wpautop() to display the long_description with proper formatting
         var longDescriptionElement = $('<div>').html(data.long_description);
+
+        // Check if longDescriptionElement is empty (has no content)
+        if (longDescriptionElement.is(':empty')) {
+          longDescriptionElement.html('<h3>What is Lorem Ipsum?</h3>' +
+            '<p><strong>Lorem Ipsum</strong> is simply dummy text of the printing and typesetting industry. ' +
+            'Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer ' +
+            'took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, ' +
+            'but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the ' +
+            '1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop ' +
+            'publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>');
+        }
+
+        // Remove only backslashes (special characters)
+        var trimmedDescription = longDescriptionElement.html().replace(/\\/g, '');
+
+        // Update the longDescriptionElement with the trimmed content
+        longDescriptionElement.html(trimmedDescription);
+
         contentContainer.append(longDescriptionElement);
         //li.append(longDescriptionElement);
 

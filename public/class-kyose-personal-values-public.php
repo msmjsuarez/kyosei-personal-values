@@ -222,7 +222,7 @@ class Kyose_Personal_Values_Public
                 $output = '';
 
                 // Create the dropdown select
-                $output .= '<div class="row"><select id="dateSelect">';
+                $output .= '<div><select id="dateSelect">';
                 foreach ($rows as $row) {
                     $created_at_formatted = date('F j, Y g:i A', strtotime($row->created_at));
                     $output .= '<option value="' . $row->id . '">' . esc_html($created_at_formatted) . '</option>';
@@ -322,8 +322,21 @@ class Kyose_Personal_Values_Public
                         // Build the output for each personal value
                         $output .= '<div class="pvc-card-' . $card . ' personal-value">';
                         $output .= '<div class="pvc-content-container"><h2>' . esc_html($title) . '</h2>';
-                        $output .= '<p>Description: ' . esc_html($personal_value_data->description) . '</p>';
-                        $output .= '<p>Long Description: ' . wp_kses_post($personal_value_data->long_description) . '</p>';
+
+                        if (!empty($personal_value_data->long_description)) {
+                            $output .= '<p>' . wp_kses_post(stripslashes($personal_value_data->long_description)) . '</p>';
+                        } else {
+                            $output .= '<h3>What is Lorem Ipsum?</h3>' .
+                                '<strong>Lorem Ipsum</strong> is simply dummy text of the printing and typesetting industry. ' .
+                                '<p>Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer ' .
+                                'took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, ' .
+                                'but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the ' .
+                                '1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop ' .
+                                'publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>';
+                        }
+
+                        // $output .= '<p>' . wp_kses_post(stripslashes($personal_value_data->long_description)) . '</p>';
+
                         $output .= '<p>Modality Tag Names: ' . implode(', ', $modality_tag_names) . '</p></div>';
                         $output .= '<div class="background-image-container"><img src="' . esc_url($personal_value_data->image) . '" alt="' . esc_attr($title) . '"></div>';
                         $output .= '</div>';

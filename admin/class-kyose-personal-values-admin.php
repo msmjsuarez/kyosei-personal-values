@@ -64,6 +64,9 @@ class Kyose_Personal_Values_Admin
 
         add_action('show_user_profile', [$this, 'append_custom_link_to_user_profiles']);
         add_action('edit_user_profile', [$this, 'append_custom_link_to_user_profiles']);
+
+        add_action('show_user_profile', [$this, 'display_custom_user_profile_link']);
+        add_action('edit_user_profile', [$this, 'display_custom_user_profile_link']);
     }
 
     /**
@@ -622,9 +625,17 @@ class Kyose_Personal_Values_Admin
     public function append_custom_link_to_user_profiles($profileuser)
     {
         // Define the custom link you want to add
-        $top_values_link = '<a href="http://kyosei-personal-values.test/my-top-values/">My Top Personal Values</a>';
+        $top_values_link = '<a href="/my-top-values/">My Top Personal Values</a>';
 
         // Output the custom link
-        echo '<h3> ' . $top_values_link . '</h3>';
+        echo '<h3>' . $top_values_link . '</h3>';
+    }
+
+    public function display_custom_user_profile_link($user_id)
+    {
+        $top_values_link = '<h3><a href="/my-top-values/">My Top Personal Values</a></h3>';
+
+        // Output the custom link
+        echo '<div class="custom-profile-link">' . $top_values_link . '</div>';
     }
 }
