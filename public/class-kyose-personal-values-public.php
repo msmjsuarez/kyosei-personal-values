@@ -66,6 +66,9 @@ class Kyose_Personal_Values_Public
 
         add_action('wp_ajax_get_long_description', array($this, 'get_long_description'));
         add_action('wp_ajax_nopriv_get_long_description', array($this, 'get_long_description'));
+
+        add_action('wp_ajax_get_card_data', array($this, 'get_card_data'));
+        add_action('wp_ajax_nopriv_get_card_data', array($this, 'get_card_data'));
     }
 
     /**
@@ -388,5 +391,33 @@ class Kyose_Personal_Values_Public
 
         // Send the response as JSON
         wp_send_json($response);
+    }
+
+    public function get_card_data()
+    {
+        // Check if the title parameter is passed in the AJAX request
+        if (isset($_POST['title'])) {
+            $card_title = sanitize_text_field($_POST['title']);
+
+            // Query the database to fetch card data
+            global $wpdb;
+            $table_name = $wpdb->prefix . 'kyosei_personal_values'; // Replace with your actual table name
+            $query = $wpdb->prepare("SELECT long_description FROM $table_name WHERE title = %s", $card_title);
+            $result = $wpdb->get_row($query);
+
+            if ($result) {
+                // If data is found, send it as JSON response
+                $response = array(
+                    'long_description' => $result->long_description,
+                );
+                wp_send_json($response);
+            } else {
+                // If data is not found, send an error response
+                wp_send_json_error(array('message' => 'Card data not found.'));
+            }
+        } else {
+            // If title parameter is not provided, send an error response
+            wp_send_json_error(array('message' => 'Title parameter is missing.'));
+        }
     }
 }

@@ -1,7 +1,14 @@
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+<!-- <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script> -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
+<!-- <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script> -->
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 
 <style>
@@ -23,6 +30,7 @@
     border: none;
     /* Remove the border */
     transition: transform 0.3s ease-in-out;
+    z-index: 1;
   }
 
   .personal-values-list .card:hover {
@@ -223,6 +231,27 @@
       text-align: center !important;
     }
   }
+
+  .icon {
+    position: absolute;
+    top: 10%;
+    left: 90%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    cursor: pointer;
+  }
+
+  .fade:not(.show) {
+    opacity: 1;
+  }
+
+  .icon i {
+    font-size: 15px;
+  }
+
+  h3.popover-title {
+    display: none;
+  }
 </style>
 
 <!-- Personal Values List -->
@@ -257,12 +286,19 @@
             <?php for ($col = 1; $col <= $cards_per_row; $col++) : ?>
               <?php if ($index < $card_count) : ?>
                 <div class="col-md-<?php echo intval(12 / $cards_per_row); ?>">
+
                   <div class="card" onclick="selectCard(this)" data-original-modality-ids="<?php echo ($cards[$index]['modality_tag_ids']); ?>" data-modality-ids="<?php echo ($cards[$index]['modality_tag_ids']); ?>">
+
                     <div class="card-body">
                       <h3 class="personal-value-title"><?php echo esc_html($cards[$index]['title']); ?></h3>
                       <p><?php echo esc_html($cards[$index]['description']); ?></p>
                       <img src="<?php echo esc_url($cards[$index]['image']); ?>" alt="<?php echo esc_attr($cards[$index]['title']); ?>" class="img-fluid">
                       <input type="hidden" name="selected_cards[]" value="<?php echo esc_attr($cards[$index]['id']); ?>">
+
+                      <div class="icon" data-toggle="popover" data-html="true" data-title="<?php echo esc_html($cards[$index]['title']); ?>">
+                        <i class="fas fa-info-circle"></i>
+                      </div>
+
                     </div>
                   </div>
                 </div>
@@ -328,6 +364,73 @@
 
   // Call the function to populate modality names on page load
   $(document).ready(function() {
+    // Initialize Bootstrap popovers with custom container
+    $('[data-toggle="popover"]').popover({
+      container: 'body', // Specify the body as the container
+    });
+
+    $('.icon').on('click', function(event) {
+      var $this = $(this); // Store the reference to $(this) in a variable
+      event.stopPropagation(); // Prevent the click event from bubbling up to the parent div
+
+      // Extract the data-title attribute
+      var cardTitle = $this.data('title');
+
+      // Send an AJAX request to fetch data from the database
+      $.ajax({
+        url: '<?php echo admin_url('admin-ajax.php'); ?>',
+        method: 'POST',
+        data: {
+          action: 'get_card_data', // Create a WordPress action for this
+          title: cardTitle
+        },
+        dataType: 'json',
+        success: function(data) {
+          // Check if the data contains the long_description
+          var content = data.long_description ? data.long_description : 'No description available';
+
+          // Update the data-content of the popover with the content
+          $this.attr('data-content', content);
+
+          // Show the popover with a fade-in effect
+          $this.popover('show');
+
+          // Add the 'in' class to trigger the fade-in transition
+          setTimeout(function() {
+            $this.next('.popover').addClass('in');
+          }, 0);
+
+          console.log(data.long_description);
+        },
+        error: function(xhr, status, error) {
+          console.error('Error fetching card data:', error);
+        }
+      });
+    });
+
+    // Handle popover placement based on parent div's position
+    $('.card').each(function() {
+      var parentDiv = $(this);
+      var icon = parentDiv.find('.icon');
+      var parentDivOffset = parentDiv.offset();
+      var windowWidth = $(window).width();
+
+      // Determine if the parent div is closer to the left or right side of the viewport
+      var placement = parentDivOffset.left < windowWidth / 2 ? 'right' : 'left';
+
+      // Set the placement for the popover
+      icon.attr('data-placement', placement);
+    });
+
+    // Close popovers when clicking anywhere on the page
+    $(document).on('click', function(e) {
+      // Check if the clicked element is inside a popover
+      if ($(e.target).data('toggle') !== 'popover' && $(e.target).parents('.popover.in').length === 0) {
+        // Hide any open popovers
+        $('[data-toggle="popover"]').popover('hide');
+      }
+    });
+
     fetchAndPopulateModalities();
 
     // Call the function whenever the modality selection changes
@@ -341,7 +444,6 @@
     });
 
   });
-
 
   function selectCard(element) {
     var selectedCount = $('.personal-values-list .card.selected').length;
@@ -780,6 +882,7 @@
     }
   }
 
+
   $('.selected-value-cards').on('click', '.card', function() {
     selectPairCard(this);
   });
@@ -790,5 +893,5 @@
 
   $('.personal-values-list .card').removeClass('selected');
   updateSelectedCount();
-  updateSubmitButton();
+  // updateSubmitButton();
 </script>
