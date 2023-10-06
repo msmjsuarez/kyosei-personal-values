@@ -252,6 +252,41 @@
   h3.popover-title {
     display: none;
   }
+
+  /* CSS for the popup */
+  .popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    /* Semi-transparent background */
+    z-index: 1000;
+    /* Ensure it's above other elements */
+    justify-content: center;
+    align-items: center;
+  }
+
+  .popup-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    max-width: 400px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .popup-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+  }
 </style>
 
 <!-- Personal Values List -->
@@ -295,7 +330,7 @@
                       <img src="<?php echo esc_url($cards[$index]['image']); ?>" alt="<?php echo esc_attr($cards[$index]['title']); ?>" class="img-fluid">
                       <input type="hidden" name="selected_cards[]" value="<?php echo esc_attr($cards[$index]['id']); ?>">
 
-                      <div class="icon" data-toggle="popover" data-html="true" data-title="<?php echo esc_html($cards[$index]['title']); ?>">
+                      <div class="icon" data-toggle="popup" data-title="<?php echo esc_attr($cards[$index]['title']); ?>" data-content="<?php echo esc_attr($cards[$index]['long_description']); ?>">
                         <i class="fas fa-info-circle"></i>
                       </div>
 
@@ -345,7 +380,6 @@
     <div class="progress-bar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
   </div>
 
-  <!-- Print the Bottom text below the card-pair-container -->
   <?php
   // Fetch the top text from the options table
   $bottomText = get_option('personal_values_compare_page_text_bottom', '');
@@ -353,119 +387,25 @@
   ?>
 </div>
 
+<div class="popup" id="card-popup">
+  <div class="popup-content">
+    <span class="popup-close" id="popup-close-btn">&times;</span>
+    <div class="popup-inner-content">
+      <!-- Content goes here -->
+    </div>
+  </div>
+</div>
+
 <script>
   var selectedCards = [];
   var cardPairs = [];
   var currentPairIndex = 0;
   var maxCardCount = <?php echo intval(get_option('personal_values_selected_card_count', 12)); ?>;
-  // Store the selected modality
   var selectedModality = $('#modality-select').val();
-
-
-  // Function to initialize popovers
-  function initializePopovers() {
-    $('[data-toggle="popover"]').popover({
-      container: 'body', // Specify the body as the container
-      trigger: 'manual' // Set trigger to manual
-    });
-
-    // Handle popover placement based on parent div's position
-    $('.card').each(function() {
-      var parentDiv = $(this);
-      var icon = parentDiv.find('.icon');
-      var parentDivOffset = parentDiv.offset();
-      var windowWidth = $(window).width();
-
-      // Determine if the parent div is closer to the left or right side of the viewport
-      var placement = parentDivOffset.left < windowWidth / 2 ? 'right' : 'left';
-
-      // Set the placement for the popover
-      icon.attr('data-placement', placement);
-    });
-
-    // Show popover when icon is clicked
-    $('.personal-values-list').on('click', '.icon', function(event) {
-      event.stopPropagation(); // Prevent the click event from bubbling up to the parent div
-
-      var $this = $(this);
-      var cardTitle = $this.data('title');
-
-      // Send an AJAX request to fetch data from the database
-      $.ajax({
-        url: '<?php echo admin_url('admin-ajax.php'); ?>',
-        method: 'POST',
-        data: {
-          action: 'get_card_data', // Create a WordPress action for this
-          title: cardTitle
-        },
-        dataType: 'json',
-        success: function(data) {
-          var content = data.long_description ? data.long_description : 'No description available';
-          $this.attr('data-content', content);
-
-          // Reinitialize popover with the updated content
-          $this.popover('destroy'); // Destroy the existing popover
-          $this.popover({
-            container: 'body',
-            trigger: 'manual',
-            content: content // Set the content dynamically
-          });
-
-          // Hide any open popovers and then show the popover
-          $('[data-toggle="popover"]').not($this).popover('hide');
-          $this.popover('show');
-        },
-        error: function(xhr, status, error) {
-          console.error('Error fetching card data:', error);
-        }
-      });
-    });
-
-    // Close popovers when clicking anywhere on the page
-    $(document).on('click', function(e) {
-      // Check if the clicked element is inside a popover
-      if ($(e.target).data('toggle') !== 'popover' && $(e.target).parents('.popover.in').length === 0) {
-        // Hide any open popovers
-        $('[data-toggle="popover"]').popover('hide');
-      }
-    });
-  }
-
 
 
   // Call the function to populate modality names on page load
   $(document).ready(function() {
-
-    initializePopovers();
-
-    // Initialize Bootstrap popovers with custom container
-    $('[data-toggle="popover"]').popover({
-      container: 'body', // Specify the body as the container
-    });
-
-
-    // Handle popover placement based on parent div's position
-    $('.card').each(function() {
-      var parentDiv = $(this);
-      var icon = parentDiv.find('.icon');
-      var parentDivOffset = parentDiv.offset();
-      var windowWidth = $(window).width();
-
-      // Determine if the parent div is closer to the left or right side of the viewport
-      var placement = parentDivOffset.left < windowWidth / 2 ? 'right' : 'left';
-
-      // Set the placement for the popover
-      icon.attr('data-placement', placement);
-    });
-
-    // Close popovers when clicking anywhere on the page
-    $(document).on('click', function(e) {
-      // Check if the clicked element is inside a popover
-      if ($(e.target).data('toggle') !== 'popover' && $(e.target).parents('.popover.in').length === 0) {
-        // Hide any open popovers
-        $('[data-toggle="popover"]').popover('hide');
-      }
-    });
 
     fetchAndPopulateModalities();
 
@@ -917,6 +857,63 @@
       $('.resetthis').append($row);
     }
   }
+
+  // Function to display the popup with content
+  function displayPopup(title, content) {
+    // Get references to popup elements
+    var popup = document.getElementById('card-popup');
+    var innerContent = document.querySelector('.popup-inner-content');
+
+    // Set the title and content in the popup
+    innerContent.innerHTML = '<h3>' + title + '</h3>' + content;
+
+    // Show the popup
+    popup.style.display = 'block';
+  }
+
+  // Function to close the popup
+  function closePopup() {
+    var popup = document.getElementById('card-popup');
+    popup.style.display = 'none';
+  }
+
+  // Show the popup when icon is clicked
+  $('.personal-values-list').on('click', '.icon', function(event) {
+    event.stopPropagation();
+    var $this = $(this);
+    var cardTitle = $this.data('title');
+
+    // Send an AJAX request to fetch data from the database
+    $.ajax({
+      url: '<?php echo admin_url('admin-ajax.php'); ?>',
+      method: 'POST',
+      data: {
+        action: 'get_card_data',
+        title: cardTitle
+      },
+      dataType: 'json',
+      success: function(data) {
+        var content = data.long_description ? data.long_description : 'No description available';
+        displayPopup(data.title, content); // Pass the title to the displayPopup function
+      },
+      error: function(xhr, status, error) {
+        console.error('Error fetching card data:', error);
+      }
+    });
+  });
+
+  // Close the popup when close button is clicked
+  $('#popup-close-btn').click(function() {
+    closePopup();
+  });
+
+  // Close the popup when clicking outside of it
+  $('.popup').click(function(event) {
+    if (event.target === this) {
+      closePopup();
+    }
+  });
+
 
 
   $('.selected-value-cards').on('click', '.card', function() {

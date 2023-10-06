@@ -402,12 +402,13 @@ class Kyose_Personal_Values_Public
             // Query the database to fetch card data
             global $wpdb;
             $table_name = $wpdb->prefix . 'kyosei_personal_values'; // Replace with your actual table name
-            $query = $wpdb->prepare("SELECT long_description FROM $table_name WHERE title = %s", $card_title);
+            $query = $wpdb->prepare("SELECT title, long_description FROM $table_name WHERE title = %s", $card_title);
             $result = $wpdb->get_row($query);
 
             if ($result) {
                 // If data is found, send it as JSON response
                 $response = array(
+                    'title' => $result->title,
                     'long_description' => $result->long_description,
                 );
                 wp_send_json($response);
