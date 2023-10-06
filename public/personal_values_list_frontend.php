@@ -362,8 +362,79 @@
   var selectedModality = $('#modality-select').val();
 
 
+  // Function to initialize popovers
+  function initializePopovers() {
+    $('[data-toggle="popover"]').popover({
+      container: 'body', // Specify the body as the container
+      trigger: 'manual' // Set trigger to manual
+    });
+
+    // Handle popover placement based on parent div's position
+    $('.card').each(function() {
+      var parentDiv = $(this);
+      var icon = parentDiv.find('.icon');
+      var parentDivOffset = parentDiv.offset();
+      var windowWidth = $(window).width();
+
+      // Determine if the parent div is closer to the left or right side of the viewport
+      var placement = parentDivOffset.left < windowWidth / 2 ? 'right' : 'left';
+
+      // Set the placement for the popover
+      icon.attr('data-placement', placement);
+    });
+
+    // Show popover when icon is clicked
+    $('.icon').on('click', function(event) {
+      event.stopPropagation(); // Prevent the click event from bubbling up to the parent div
+
+      var $this = $(this);
+      var cardTitle = $this.data('title');
+
+      // Send an AJAX request to fetch data from the database
+      $.ajax({
+        url: '<?php echo admin_url('admin-ajax.php'); ?>',
+        method: 'POST',
+        data: {
+          action: 'get_card_data', // Create a WordPress action for this
+          title: cardTitle
+        },
+        dataType: 'json',
+        success: function(data) {
+          var content = data.long_description ? data.long_description : 'No description available';
+          $this.attr('data-content', content);
+
+          // Reinitialize popover with the updated content
+          $this.popover('destroy'); // Destroy the existing popover
+          $this.popover({
+            container: 'body',
+            trigger: 'manual',
+            content: content // Set the content dynamically
+          });
+
+          $this.popover('show'); // Show the popover
+        },
+        error: function(xhr, status, error) {
+          console.error('Error fetching card data:', error);
+        }
+      });
+    });
+
+    // Close popovers when clicking anywhere on the page
+    $(document).on('click', function(e) {
+      // Check if the clicked element is inside a popover
+      if ($(e.target).data('toggle') !== 'popover' && $(e.target).parents('.popover.in').length === 0) {
+        // Hide any open popovers
+        $('[data-toggle="popover"]').popover('hide');
+      }
+    });
+  }
+
+
   // Call the function to populate modality names on page load
   $(document).ready(function() {
+
+    initializePopovers();
+
     // Initialize Bootstrap popovers with custom container
     $('[data-toggle="popover"]').popover({
       container: 'body', // Specify the body as the container
@@ -406,6 +477,19 @@
           console.error('Error fetching card data:', error);
         }
       });
+    });
+
+    // Call the function whenever the modality selection changes
+    $(document).on('change', '#modality-select', function() {
+      // Get the selected modality
+      selectedModality = $(this).val();
+      applyModalityFilter();
+
+      // Set the selected modality as the selected option
+      $('#modality-select option[value="' + selectedModality + '"]').prop('selected', true);
+
+      // Reinitialize popovers after filtering
+      initializePopovers();
     });
 
     // Handle popover placement based on parent div's position
