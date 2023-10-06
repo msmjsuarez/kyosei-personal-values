@@ -11,14 +11,18 @@
     } else {
         $getpage = intval($_GET['paged']);
     }
+
+    if (isset($_POST['update_card'])) {
+        echo '<div class="notice notice-success"><p>Card updated successfully!</p></div>';
+    }
     ?>
 
-    <form method="post" enctype="multipart/form-data"
-          action="<?php echo esc_url(admin_url('admin.php?page=personal-values&paged=' . $getpage)); ?>">
+    <form method="post" enctype="multipart/form-data" action="<?php echo esc_url(admin_url('admin.php?page=personal-values&paged=' . $getpage)); ?>">
 
         <div class="form-group">
             <label for="title">Title:</label>
-            <input type="text" class="form-control" name="title" placeholder="Title" value="<?php echo isset($_POST['title']) ? esc_attr($_POST['title']) : ''; ?>" required>
+            <!-- <input type="text" class="form-control" name="title" placeholder="Title" value="<?php echo isset($_POST['title']) ? esc_attr($_POST['title']) : ''; ?>" required> -->
+            <input type="text" class="form-control" name="title" placeholder="Title" value="" required>
         </div>
         <div class="form-group">
             <label for="image">Image:</label>
@@ -26,13 +30,15 @@
         </div>
         <div class="form-group">
             <label for="description">Short Description:</label>
-            <textarea name="description" class="form-control" placeholder="Description" required><?php echo isset($_POST['description']) ? esc_textarea($_POST['description']) : ''; ?></textarea>
+            <!-- <textarea name="description" class="form-control" placeholder="Description" required><?php echo isset($_POST['description']) ? esc_textarea($_POST['description']) : ''; ?></textarea> -->
+            <textarea name="description" class="form-control" placeholder="Description" required></textarea>
         </div>
         <div class="form-group">
             <label for="long_description">Long Description:</label>
             <?php
             // Get the long description content if it exists (when editing)
-            $longDescriptionContent = isset($_POST['long_description']) ? wp_kses_post($_POST['long_description']) : '';
+            // $longDescriptionContent = isset($_POST['long_description']) ? wp_kses_post($_POST['long_description']) : '';
+            $longDescriptionContent = '';
             // Output the WordPress editor for long_description field
             wp_editor($longDescriptionContent, 'long_description', array(
                 'media_buttons' => false,
@@ -70,8 +76,7 @@
         </div>
         <div class="personal-values-search">
             <form method="get" action="?page=personal-values" id="personal-values-search-form">
-                <input type="text" name="search" id="personal-values-search-input" placeholder="Search by title"
-                       value="<?php echo isset($_GET['search']) ? esc_attr($_GET['search']) : ''; ?>">
+                <input type="text" name="search" id="personal-values-search-input" placeholder="Search by title" value="<?php echo isset($_GET['search']) ? esc_attr($_GET['search']) : ''; ?>">
                 <span id="personal-values-search-clear" class="search-clear">&times;</span>
                 <input type="submit" value="Search" class="hidden">
             </form>
@@ -117,29 +122,29 @@
     <div class="personal-values-list">
         <table class="wp-list-table widefat fixed striped">
             <thead>
-            <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Image</th>
-                <th>Modality Tags</th>
-                <th>Actions</th>
-            </tr>
+                <tr>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Image</th>
+                    <th>Modality Tags</th>
+                    <th>Actions</th>
+                </tr>
             </thead>
             <tbody id="personal-values-table-body">
-            <?php
-            foreach ($cards as $card) {
-                echo '<tr>';
-                echo '<td>' . esc_html($card['title']) . '</td>';
-                echo '<td>' . esc_html($card['description']) . '</td>';
-                echo '<td><img src="' . esc_url($card['image']) . '" width="100" height="100"></td>';
-                echo '<td>' . (!empty($card['modality_tags']) ? esc_html($card['modality_tags']) : '-') . '</td>';
-                echo '<td>';
-                echo '<a href="?page=personal-values&action=edit&card_id=' . esc_attr($card['id']) . '&paged=' . $_GET['paged'] . '">Edit</a> | ';
-                echo '<a href="#" class="delete-card" data-card-id="' . esc_attr($card['id']) . '">Delete</a>';
-                echo '</td>';
-                echo '</tr>';
-            }
-            ?>
+                <?php
+                foreach ($cards as $card) {
+                    echo '<tr>';
+                    echo '<td>' . esc_html($card['title']) . '</td>';
+                    echo '<td>' . esc_html($card['description']) . '</td>';
+                    echo '<td><img src="' . esc_url($card['image']) . '" width="100" height="100"></td>';
+                    echo '<td>' . (!empty($card['modality_tags']) ? esc_html($card['modality_tags']) : '-') . '</td>';
+                    echo '<td>';
+                    echo '<a href="?page=personal-values&action=edit&card_id=' . esc_attr($card['id']) . '&paged=' . $_GET['paged'] . '">Edit</a> | ';
+                    echo '<a href="#" class="delete-card" data-card-id="' . esc_attr($card['id']) . '">Delete</a>';
+                    echo '</td>';
+                    echo '</tr>';
+                }
+                ?>
             </tbody>
         </table>
     </div>
@@ -267,9 +272,9 @@
     </style>
 
     <script>
-        jQuery(document).ready(function ($) {
+        jQuery(document).ready(function($) {
             // Delete Card Action
-            $('.delete-card').on('click', function (e) {
+            $('.delete-card').on('click', function(e) {
                 e.preventDefault();
 
                 var cardId = $(this).data('card-id');
@@ -285,7 +290,7 @@
                             card_id: cardId,
                             security: '<?php echo wp_create_nonce("delete_card"); ?>'
                         },
-                        success: function (response) {
+                        success: function(response) {
                             if (response.success) {
                                 // Card deleted successfully, remove the row from the table
                                 $('tr[data-card-id="' + cardId + '"]').remove();
@@ -294,7 +299,7 @@
                                 alert(response.data.message);
                             }
                         },
-                        error: function (jqXHR, textStatus, errorThrown) {
+                        error: function(jqXHR, textStatus, errorThrown) {
                             console.error('Error:', errorThrown);
                         }
                     });
@@ -302,7 +307,7 @@
             });
 
             // Search Personal Values
-            $('#personal-values-search-input').on('keyup', function (e) {
+            $('#personal-values-search-input').on('keyup', function(e) {
                 var searchTerm = $(this).val();
                 fetchPersonalValues(searchTerm);
             });
@@ -317,10 +322,10 @@
                         search: searchTerm,
                         security: '<?php echo wp_create_nonce("fetch_personal_values"); ?>'
                     },
-                    beforeSend: function () {
+                    beforeSend: function() {
                         // Show loading indicator or spinner
                     },
-                    success: function (response) {
+                    success: function(response) {
                         if (response.success) {
                             // Update the table body with the new HTML content
                             $('#personal-values-table-body').html(response.data.html);
@@ -328,23 +333,23 @@
                             alert(response.data.message);
                         }
                     },
-                    error: function (jqXHR, textStatus, errorThrown) {
+                    error: function(jqXHR, textStatus, errorThrown) {
                         console.error('Error:', errorThrown);
                     },
-                    complete: function () {
+                    complete: function() {
                         // Hide loading indicator or spinner
                     }
                 });
             }
 
             // Show search clear icon when search input has value
-            $('#personal-values-search-input').on('input', function () {
+            $('#personal-values-search-input').on('input', function() {
                 var searchValue = $(this).val();
                 $(this).siblings('.search-clear').toggle(searchValue !== '');
             });
 
             // Clear search text
-            $('#personal-values-search-clear').on('click', function (e) {
+            $('#personal-values-search-clear').on('click', function(e) {
                 e.preventDefault();
                 $('#personal-values-search-input').val('').focus();
                 $(this).hide();
@@ -352,7 +357,7 @@
             });
 
             // Prevent form submission on Enter keypress
-            $('#personal-values-search-form').on('submit', function (e) {
+            $('#personal-values-search-form').on('submit', function(e) {
                 e.preventDefault();
             });
         });

@@ -16,13 +16,16 @@
     } else {
         $getpage = intval($_GET['paged']);
     }
+
     ?>
 
     <form method="post" enctype="multipart/form-data" action="<?php echo esc_url(admin_url('admin.php?page=personal-values&action=edit&card_id=' . esc_attr($card['id'])) . '&paged=' . $getpage); ?>">
         <input type="hidden" name="card_id" value="<?php echo esc_attr($card['id']); ?>">
         <div class="form-group">
             <label for="title">Title</label>
-            <input type="text" class="form-control" name="title" placeholder="Title" value="<?php echo esc_attr($card['title']); ?>" required>
+            <!-- <input type="text" class="form-control" name="title" placeholder="Title" value="<?php echo esc_attr($card['title']); ?>" required> -->
+            <input type="text" class="form-control" name="title" placeholder="Title" value="<?php echo isset($_POST['update_card']) ? '' : esc_attr($card['title']); ?>" required>
+
         </div>
         <div class="form-group">
             <img src="<?php echo esc_url($card['image']); ?>" width="100" height="100">
@@ -35,7 +38,7 @@
         <div class="form-group">
             <label for="long_description">Long Description</label>
             <?php
-            $long_description_content = wp_kses_post($card['long_description']);
+            $long_description_content = stripslashes(wp_kses_post($card['long_description']));
             $long_description_editor_id = 'long_description_editor';
             $long_description_settings = array(
                 'textarea_name' => 'long_description',

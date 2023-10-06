@@ -155,7 +155,7 @@ class Kyose_Personal_Values_Admin
         if (isset($_POST['add_card'])) {
             $title = stripslashes(sanitize_text_field($_POST['title']));
             $description = stripslashes(sanitize_text_field($_POST['description']));
-            $longDescription = wp_kses_post($_POST['long_description']); // Sanitize and allow only allowed HTML tags
+            $longDescription = stripslashes(wp_kses_post($_POST['long_description']));
             $image = $_FILES['image'];
 
             // Generate a unique identifier (timestamp) for the image
@@ -177,12 +177,10 @@ class Kyose_Personal_Values_Admin
             $modalityTags = isset($_POST['modality_tags']) ? $_POST['modality_tags'] : array();
             $modalityTagIds = array_map('absint', $modalityTags); // Sanitize the modality tag IDs as integers
 
-            // Ensure $modalityTagIds is an array
             if (!is_array($modalityTagIds)) {
-                $modalityTagIds = array(); // Set an empty array as the default value
+                $modalityTagIds = array();
             }
 
-            // Insert the card into the database
             global $wpdb;
             $table_name = $wpdb->prefix . 'kyosei_personal_values';
             $wpdb->insert(
@@ -197,40 +195,32 @@ class Kyose_Personal_Values_Admin
                 array('%s', '%s', '%s', '%s', '%s')
             );
 
-            // Show success message
             echo '<div class="notice notice-success"><p>New Personal Value card added successfully!</p></div>';
         }
     }
-
 
     private static function updateCard()
     {
         $card_id = $_POST['card_id'];
         $title = stripslashes(sanitize_text_field($_POST['title']));
         $description = stripslashes(sanitize_text_field($_POST['description']));
-        $longDescription = wp_kses_post($_POST['long_description']);
+        $longDescription = stripslashes(wp_kses_post($_POST['long_description']));
         $image = $_FILES['image'];
 
-        // Retrieve the existing card from the database
         global $wpdb;
         $table_name = $wpdb->prefix . 'kyosei_personal_values';
         $existing_card = $wpdb->get_row($wpdb->prepare("SELECT * FROM $table_name WHERE id = %d", $card_id), ARRAY_A);
         if (!$existing_card) {
-            // Card not found, handle error or return
             return;
         }
 
-        // Retrieve the existing image URL from the database
         $existing_image_url = $existing_card['image'];
 
-        // Check if a new image was uploaded
         if ($image['error'] === UPLOAD_ERR_OK) {
-            // A new image was uploaded, process it as before
             $upload_dir = wp_upload_dir();
             $image_name = basename($image['name']);
 
-            // Generate a unique identifier (timestamp) for the image
-            $unique_identifier = time(); // This will be the current timestamp
+            $unique_identifier = time();
 
             // Append the unique identifier to the image name before the extension
             $image_name_parts = pathinfo($image_name);
