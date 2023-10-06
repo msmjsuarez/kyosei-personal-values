@@ -384,7 +384,7 @@
     });
 
     // Show popover when icon is clicked
-    $('.icon').on('click', function(event) {
+    $('.personal-values-list').on('click', '.icon', function(event) {
       event.stopPropagation(); // Prevent the click event from bubbling up to the parent div
 
       var $this = $(this);
@@ -411,7 +411,9 @@
             content: content // Set the content dynamically
           });
 
-          $this.popover('show'); // Show the popover
+          // Hide any open popovers and then show the popover
+          $('[data-toggle="popover"]').not($this).popover('hide');
+          $this.popover('show');
         },
         error: function(xhr, status, error) {
           console.error('Error fetching card data:', error);
@@ -430,6 +432,7 @@
   }
 
 
+
   // Call the function to populate modality names on page load
   $(document).ready(function() {
 
@@ -440,57 +443,6 @@
       container: 'body', // Specify the body as the container
     });
 
-    $('.icon').on('click', function(event) {
-      var $this = $(this); // Store the reference to $(this) in a variable
-      event.stopPropagation(); // Prevent the click event from bubbling up to the parent div
-
-      // Extract the data-title attribute
-      var cardTitle = $this.data('title');
-
-      // Send an AJAX request to fetch data from the database
-      $.ajax({
-        url: '<?php echo admin_url('admin-ajax.php'); ?>',
-        method: 'POST',
-        data: {
-          action: 'get_card_data', // Create a WordPress action for this
-          title: cardTitle
-        },
-        dataType: 'json',
-        success: function(data) {
-          // Check if the data contains the long_description
-          var content = data.long_description ? data.long_description : 'No description available';
-
-          // Update the data-content of the popover with the content
-          $this.attr('data-content', content);
-
-          // Show the popover with a fade-in effect
-          $this.popover('show');
-
-          // Add the 'in' class to trigger the fade-in transition
-          setTimeout(function() {
-            $this.next('.popover').addClass('in');
-          }, 0);
-
-          console.log(data.long_description);
-        },
-        error: function(xhr, status, error) {
-          console.error('Error fetching card data:', error);
-        }
-      });
-    });
-
-    // Call the function whenever the modality selection changes
-    $(document).on('change', '#modality-select', function() {
-      // Get the selected modality
-      selectedModality = $(this).val();
-      applyModalityFilter();
-
-      // Set the selected modality as the selected option
-      $('#modality-select option[value="' + selectedModality + '"]').prop('selected', true);
-
-      // Reinitialize popovers after filtering
-      initializePopovers();
-    });
 
     // Handle popover placement based on parent div's position
     $('.card').each(function() {
