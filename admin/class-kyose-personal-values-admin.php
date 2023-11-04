@@ -62,9 +62,6 @@ class Kyose_Personal_Values_Admin
         // Add the options page to the allowed options list
         add_action('admin_init', [$this, 'register_compare_page_text_settings']);
 
-        add_action('show_user_profile', [$this, 'append_custom_link_to_user_profiles']);
-        add_action('edit_user_profile', [$this, 'append_custom_link_to_user_profiles']);
-
         add_action('show_user_profile', [$this, 'display_custom_user_profile_link']);
         add_action('edit_user_profile', [$this, 'display_custom_user_profile_link']);
     }
@@ -612,20 +609,42 @@ class Kyose_Personal_Values_Admin
         register_setting('personal_values_compare_page_text_group', 'personal_values_compare_page_text_bottom');
     }
 
-    public function append_custom_link_to_user_profiles($profileuser)
-    {
-        // Define the custom link you want to add
-        $top_values_link = '<a href="/my-top-values/">My Top Personal Values</a>';
-
-        // Output the custom link
-        echo '<h3>' . $top_values_link . '</h3>';
-    }
-
     public function display_custom_user_profile_link($user_id)
     {
-        $top_values_link = '<h3><a href="/my-top-values/">My Top Personal Values</a></h3>';
+        // Get the current user's last personal value test result
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'kyosei_personal_values_user';
+
+        $last_test_result = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM $table_name WHERE user_id = %d ORDER BY created_at DESC LIMIT 1",
+            $user_id->ID
+        ));
+
+        if ($last_test_result) {
+            // Extract and decode the 'title' value
+            $title_data = unserialize($last_test_result->title);
+            $created_at = $last_test_result->created_at;
+            $timestamp = strtotime($created_at);
+            $formatted_date = date('F j, Y', $timestamp);
+
+            // Check if title_data is an array and not empty
+            if (is_array($title_data) && !empty($title_data)) {
+                echo '<h3>Personal Values:</h3>';
+                echo $formatted_date . ': ';
+                foreach ($title_data as $title) {
+                    echo ' ' . esc_html($title) . ', ';
+                }
+            } else {
+                echo '<p>No personal value test data found for this user.</p>';
+            }
+        } else {
+            echo '<p>No personal value test data found for this user.</p>';
+        }
+
+        $top_values_link = '<a href="/my-top-values/">see details</a>';
 
         // Output the custom link
-        echo '<div class="custom-profile-link">' . $top_values_link . '</div>';
+        echo $top_values_link ;
     }
+
 }

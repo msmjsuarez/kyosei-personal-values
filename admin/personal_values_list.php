@@ -125,6 +125,7 @@
                 <tr>
                     <th>Title</th>
                     <th>Description</th>
+                    <th>Long Description</th>
                     <th>Image</th>
                     <th>Modality Tags</th>
                     <th>Actions</th>
@@ -136,6 +137,7 @@
                     echo '<tr>';
                     echo '<td>' . esc_html($card['title']) . '</td>';
                     echo '<td>' . esc_html($card['description']) . '</td>';
+                    echo '<td>' . esc_html($card['long_description']) . '</td>';
                     echo '<td><img src="' . esc_url($card['image']) . '" width="100" height="100"></td>';
                     echo '<td>' . (!empty($card['modality_tags']) ? esc_html($card['modality_tags']) : '-') . '</td>';
                     echo '<td>';
