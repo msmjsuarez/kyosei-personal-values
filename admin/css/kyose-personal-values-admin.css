@@ -1,0 +1,83 @@
+.pagination {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.pagination a {
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 0 5px;
+    text-decoration: none;
+    background-color: #f2f2f2;
+    border-radius: 4px;
+    color: #333;
+}
+
+.pagination a.current {
+    background-color: #333;
+    color: #fff;
+}
+
+.pagination a.padding {
+    /* pointer-events: none; */
+}
+
+.personal-values-search {
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.personal-values-search form {
+    display: flex;
+    align-items: center;
+}
+
+.personal-values-search input[type="text"],
+.personal-values-search input[type="submit"] {
+    margin-left: 10px;
+}
+
+.heading-search div {
+    display: inline-flex;
+}
+
+.personal-values-search {
+    float: right;
+}
+
+.hidden {
+    display: none;
+}
+
+.pagination .ellipsis {
+    margin: 0 5px;
+    color: #333;
+}
+
+.personal-values-search .search-clear {
+    cursor: pointer;
+    font-size: 18px;
+    color: #999;
+    margin-left: -25px;
+    display: none;
+}
+
+.personal-values-search .search-clear:hover {
+    color: #333;
+}
+
+div#wpfooter {
+    display: none;
+}
+
+.modality-tag {
+    color: #007F8C;
+}
+
+.modality-tag:hover {
+    text-decoration: underline;
+}
