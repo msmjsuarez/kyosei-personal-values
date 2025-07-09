@@ -210,7 +210,7 @@
         // ✅ Redirect to the final page
         window.location.href = response.data.redirect_url;
       } else {
-        alert('Failed to save personal values.');
+        alert('Failed to save personal values. You need to login to save your personal values.');
       }
     }).fail(function (_, __, error) {
       console.error('Error saving top personal values:', error);

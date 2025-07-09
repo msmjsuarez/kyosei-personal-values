@@ -183,7 +183,7 @@ class Kyose_Personal_Values_Public
         $rows = $wpdb->get_results($wpdb->prepare("SELECT * FROM $table WHERE user_id = %d ORDER BY created_at DESC", $user_id));
 
         if (!$rows) {
-            return 'No personal value card found.';
+            return 'No top personal values found. Do the test first to see your top personal values.';
         }
 
         ob_start();

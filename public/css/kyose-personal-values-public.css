@@ -1,11 +1,9 @@
  * {
   box-sizing: border-box;
 }
-
-p {
+.entry-content, p {
   font-size: 1.5rem !important;
 }
-
  .pvc-row {
   display: flex;
   grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
