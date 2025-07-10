@@ -157,7 +157,7 @@ class Kyose_Personal_Values_Public
             ['%d', '%s', '%s']
         );
 
-        $redirect_url = home_url('/index.php/my-personal-values/');
+        $redirect_url = home_url('/my-top-personal-values/');
 
         wp_send_json_success([
             'message' => 'Top personal values saved.',
